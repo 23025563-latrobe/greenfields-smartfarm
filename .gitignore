@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build and test output
+dist/
+coverage/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# SQLite runtime files
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# IDE and operating system files
+.idea/
+.DS_Store
+
+# Logs and submission files
+*.log
+*.zip
+*.mp4
+*.mov

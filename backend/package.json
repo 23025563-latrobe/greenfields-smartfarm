@@ -1,0 +1,23 @@
+{
+  "name": "greenfields-smartfarm-backend",
+  "version": "0.1.0",
+  "description": "Crop card API and read-only sensor feed for GreenFields SmartFarm",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test",
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "engines": {},
+  "dependencies": {
+    "express": "5.3.0"
+  }
+}
