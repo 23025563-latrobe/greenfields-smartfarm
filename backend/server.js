@@ -1,30 +1,20 @@
-import express from 'express';
+import { createApp } from './app.js';
+import { openDatabase } from './db.js';
 
-const app = express();
+const database = openDatabase();
+const app = createApp(database);
 const port = 3001;
 
-app.use(express.json());
-
-app.get('/api/health', (request, response) => {
-  response.json({
-    status: 'ok',
-    service: 'GreenFields SmartFarm API'
-  });
-});
-
-app.use((request, response) => {
-  response.status(404).json({ error: 'Route not found' });
-});
-
-app.use((error, request, response, next) => {
-  if (error.type === 'entity.parse.failed') {
-    return response.status(400).json({ error: 'Invalid JSON request body' });
-  }
-
-  console.error(error);
-  response.status(500).json({ error: 'Internal server error' });
-});
-
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`GreenFields SmartFarm API: http://localhost:${port}`);
 });
+
+function shutdown() {
+  server.close(() => {
+    database.close();
+    process.exit(0);
+  });
+}
+
+process.once('SIGINT', shutdown);
+process.once('SIGTERM', shutdown);
