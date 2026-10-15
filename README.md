@@ -44,4 +44,10 @@ An explainable decision: keep the browser API URL relative and configure the dev
 
 A limitation: readings are a static simulated feed; refresh rereads the file but does not collect measurements from hardware.
 
-Submission requires a self-contained source ZIP excluding dependencies, secrets, local databases and generated builds, plus a 3–5 minute MP4 with audio, uploaded to the LMS. These deliverables have not yet been prepared. GitHub is not a substitute.
+## Submission preparation
+
+From a Git checkout, run `python3 scripts/package-source.py` to create `output/greenfields-smartfarm-source.zip` from tracked files. Include intended new files in Git before packaging. The archive excludes dependencies, secrets, local databases and generated builds. It contains both lockfiles, `db.js`, tests and the sensor JSON. No Git checkout is needed to install and run the extracted application.
+
+The source ZIP was extracted to a fresh temporary directory: `npm ci` succeeded in each app, backend 6/6 and frontend 10/10 tests passed, lint/build passed, and Chrome loaded three newly seeded cards using the extracted frontend/API on temporary ports 5186/3103. These verification servers are separate from the main 5184/3101 application.
+
+Use [the timed video checklist](docs/video-demo.md) to record the required 3–5 minute MP4 with audio. Upload both source ZIP and MP4 directly to the LMS; GitHub is not a substitute. Before submission, resolve the sensor-generation provenance gap and perform the outstanding checks in [the requirements checklist](docs/requirements.md). The MP4 and LMS upload remain outstanding.

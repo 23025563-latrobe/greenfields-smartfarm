@@ -27,13 +27,13 @@ Statuses: missing; partial; implemented (code exists, required runtime evidence 
 | D3 Water/actions/temp/rain boundaries (3) | analysis.js | Verified by analysis tests; 35°C no alert, 5 mm rain alert |
 | D4 Farm statuses / no crops / unavailable (4) | analysis.js, App.jsx | Verified: helper tests including rain alone; Chrome unavailable, Critical and No Crops states |
 | D5 Cards/forms/labels/feedback/history (4), §14 | components, CSS | Partial: Chrome cards/forms/save/delete/history/keyboard checked; narrow ~562px checked; 320/375px unverified |
-| E1 Setup/URLs/database/API README (3) | README.md | Implemented; new URLs run successfully; clean-install verification pending |
+| E1 Setup/URLs/database/API README (3) | README.md | Verified: documented install/run commands work from a clean ZIP extraction with fresh DB; Chrome 5186 → API 3103 |
 | E2 Ownership/matching/priority/timestamps README (3) | README.md | Implemented; review against brief performed |
 | E3 AI prompt/correction/verification (3) | README.md | Partial; actual code correction documented; original sensor history remains unknown |
-| E4 3–5 minute MP4 business flow (4), §19 | Not yet created | Missing: demo checklist, recording, playback/audio and LMS upload |
+| E4 3–5 minute MP4 business flow (4), §19 | docs/video-demo.md | Partial: timed checklist prepared; user recording, playback/audio check and LMS upload outstanding |
 | E5 Genuine limitation (2) | README.md | Implemented: static simulated sensor feed |
 | §4/5/12 scope and shared helpers | db.js, app.js, analysis.js, components | Implemented: configuration-only DB, read-only feed, React analysis, no unrelated services; full final audit pending |
-| §19 source ZIP | Not yet created | Missing: package and clean extraction/run verification |
+| §19 source ZIP | scripts/package-source.py, output/greenfields-smartfarm-source.zip | Verified: archive integrity, dependency install, tests/build/lint and fresh Chrome dashboard from extraction; regenerate after any source changes |
 
 ## Evidence and next checks
 
@@ -41,7 +41,7 @@ Statuses: missing; partial; implemented (code exists, required runtime evidence 
 
 Live frontend http://localhost:5184; backend http://localhost:3101. Chrome shows Tomato Dry/high temperature/500 L, Lettuce Healthy/0 L, Wheat Too Wet/rain/0 L, Watch status. Refresh changed 06:38:53 to 06:39:04. Wheat history contains five descending timestamps and 120% historical Invalid Data/N/A/Check reading. Browser captured no warnings/errors during these scenarios. Other projects' processes were left untouched.
 
-Browser CRUD, duplicate feedback, pending save, edit/reload persistence, delete/recreate, first/later sensor failures, crop failure/Retry and empty state are now verified against isolated resources; see [browser evidence](browser-acceptance.md). Real Express process restart persistence is verified by an automated temporary-database test. Remaining checks: true 320/375px browser widths, comprehensive network trace, exhaustive API validation/error matrix, clean install and submission artifacts. Original sensor-generation provenance remains unresolved. Working database and sensor file were preserved.
+Browser CRUD, duplicate feedback, pending save, edit/reload persistence, delete/recreate, first/later sensor failures, crop failure/Retry and empty state are now verified against isolated resources; see [browser evidence](browser-acceptance.md). Real Express process restart persistence is verified by an automated temporary-database test. Remaining checks: true 320/375px browser widths, comprehensive network trace and exhaustive API validation/error matrix. Original sensor-generation provenance remains unresolved. Working database and sensor file were preserved.
 
 Ordered work: (1) port configuration and API/persistence regression evidence; (2) isolated browser CRUD and failure-state tests, fixing demonstrated issues; (3) complete AI provenance record honestly, final rubric audit, source ZIP and demo checklist.
 
@@ -49,3 +49,5 @@ Branch `fix/development-ports` is based on `feat/crop-dashboard` commit `0d7a8ce
 
 
 Acceptance work branch: `test/dashboard-acceptance`, based on `fix/development-ports` at `c4eece4`. GitHub authentication was rechecked successfully with the student account; the port branch was pushed and its remote SHA confirmed.
+
+Submission preparation branch: `docs/submission-readiness`, based on acceptance commit `0f1bfcf`. Clean ZIP extraction installed 65 backend and 144 frontend packages using the lockfiles; all 16 tests, lint and build passed. The extracted app ran with a fresh database on 5186/3103 and Chrome showed three cards/Watch. The source archive excludes local databases and dependencies. Timed video checklist is ready; recording and LMS upload are not performed by this agent. This is a candidate submission with the remaining gaps above, not a claim of full assessment completion.
