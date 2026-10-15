@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SmartFarm responsive verification</title>
+    <style>
+      body { font: 16px system-ui; background: #e6eae4; padding: 24px; }
+      main { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+      iframe { display: block; border: 1px solid #8b998b; background: white; }
+    </style>
+  </head>
+  <body>
+    <h1>Responsive verification</h1>
+    <p>Each frame renders the real dashboard at its stated CSS viewport width.</p>
+    <main>
+      <section><h2>320 px</h2><iframe title="320 px dashboard" src="/" width="320" height="1400"></iframe></section>
+      <section><h2>375 px</h2><iframe title="375 px dashboard" src="/" width="375" height="1400"></iframe></section>
+      <section><h2>768 px</h2><iframe title="768 px dashboard" src="/" width="768" height="1400"></iframe></section>
+    </main>
+  </body>
+</html>

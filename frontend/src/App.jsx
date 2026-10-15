@@ -18,6 +18,14 @@ import {
 import { statusClass } from './utils/format';
 import './App.css';
 
+const farmStatusDescriptions = {
+  Normal: 'All crop readings are within their configured targets.',
+  Watch: 'Review moisture conditions and high-temperature alerts.',
+  Critical: 'A sensor problem or invalid reading needs your attention.',
+  'No Crops': 'Add a crop card to start monitoring your farm.',
+  'Sensor Feed Unavailable': 'Load the sensor feed to calculate crop conditions.'
+};
+
 function App() {
   const [crops, setCrops] = useState(null);
   const [readings, setReadings] = useState(null);
@@ -202,15 +210,18 @@ function App() {
 
   return (
     <main className="app">
+      {!isLoading && !cropError && (
+        <a className="skip-link" href="#dashboard-heading">Skip to Crop Cards</a>
+      )}
       <header className="app-header">
         <div>
-          <p className="eyebrow">GreenFields Farm</p>
+          <p className="eyebrow brand"><span className="brand-mark" aria-hidden="true">GF</span> GreenFields Farm</p>
           <h1>SmartFarm Crop Dashboard</h1>
           <p className="intro">
             Manage crop settings and turn sensor readings into clear watering decisions.
           </p>
         </div>
-        <span className="header-label">Crop monitoring</span>
+        <span className="header-label">Simulated sensor feed</span>
       </header>
 
       {isLoading ? (
@@ -229,19 +240,22 @@ function App() {
       ) : (
         <>
           <section className="summary" aria-label="Farm overview">
-            <div className="summary-item">
+            <div className="summary-item status-summary">
               <span className="detail-label">Overall Farm Status</span>
               <strong className={`farm-status ${statusClass(farmStatus)}`}>
                 {farmStatus}
               </strong>
+              <p className="summary-description">{farmStatusDescriptions[farmStatus]}</p>
             </div>
             <div className="summary-item">
               <span className="detail-label">Crop Cards</span>
               <strong>{currentCrops.length}</strong>
+              <span className="summary-caption">Configured crops</span>
             </div>
             <div className="summary-item">
               <span className="detail-label">Need attention</span>
               <strong>{hasSensorData ? attentionCount : 'N/A'}</strong>
+              <span className="summary-caption">Conditions or temperature</span>
             </div>
             <div className="summary-item">
               <span className="detail-label">Last sensor refresh</span>
@@ -254,6 +268,7 @@ function App() {
                     })
                   : 'Never'}
               </strong>
+              <span className="summary-caption">Last successful request</span>
             </div>
           </section>
 

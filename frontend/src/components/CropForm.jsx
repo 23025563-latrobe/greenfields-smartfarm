@@ -77,7 +77,8 @@ function CropForm({ crop, availableNames, isSaving, onSave, onCancel }) {
         </div>
       </header>
 
-      <form onSubmit={handleSubmit}>
+      <p className="form-guidance">All fields are required except notes. Water amounts are in litres.</p>
+      <form onSubmit={handleSubmit} aria-busy={isSaving}>
         <fieldset disabled={isSaving}>
           <legend className="sr-only">Crop card settings</legend>
 
@@ -122,6 +123,7 @@ function CropForm({ crop, availableNames, isSaving, onSave, onCancel }) {
                 max="100"
                 step="any"
                 value={values.target_min}
+                aria-describedby="moisture-help"
                 onChange={handleChange}
                 required
               />
@@ -136,24 +138,34 @@ function CropForm({ crop, availableNames, isSaving, onSave, onCancel }) {
                 max="100"
                 step="any"
                 value={values.target_max}
+                aria-describedby="moisture-help"
                 onChange={handleChange}
                 required
               />
             </label>
 
-            <label>
-              Normal water (L)
-              <input
-                name="normal_water"
-                type="number"
-                min="0"
-                max="10000"
-                step="any"
-                value={values.normal_water}
-                onChange={handleChange}
-                required
-              />
-            </label>
+            <p id="moisture-help" className="full-width field-guidance">
+              Moisture targets must be between 0 and 100%. Minimum must be lower than maximum.
+              Values exactly on either target are Healthy.
+            </p>
+
+            <div className="form-field">
+              <label>
+                Normal water (L)
+                <input
+                  name="normal_water"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  step="any"
+                  value={values.normal_water}
+                  aria-describedby="water-help"
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <span id="water-help" className="field-guidance">Greater than 0, up to 10,000 L.</span>
+            </div>
 
             <label className="full-width">
               Notes <span className="muted">(optional)</span>
@@ -162,11 +174,12 @@ function CropForm({ crop, availableNames, isSaving, onSave, onCancel }) {
                 rows={3}
                 maxLength={500}
                 value={values.notes}
+                aria-describedby="notes-help"
                 onChange={handleChange}
               />
-              <span className="field-help">{values.notes.length}/500 characters</span>
             </label>
           </div>
+          <p id="notes-help" className="field-help">Notes: {values.notes.length}/500 characters</p>
 
           {error && <p className="feedback error" role="alert">{error}</p>}
 

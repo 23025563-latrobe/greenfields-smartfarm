@@ -40,6 +40,8 @@ Codex assisted the current requirements audit, port configuration, regression te
 
 A real correction in this session: adding environment loading to Vite initially caused ESLint's `process is not defined` error; importing `process` from `node:process` corrected it. See the checklist for actual verification evidence and remaining work.
 
+Responsive browser testing later found that the existing 320px body minimum width caused horizontal overflow once a narrow viewport's scrollbar consumed space. Removing the body minimum fixed the real-app 320/375/768px frame checks. The UI also adds field-limit explanations and a keyboard skip link. The reproducible browser results are in [docs/browser-acceptance.md](docs/browser-acceptance.md).
+
 An explainable decision: keep the browser API URL relative and configure the development proxy in one place, so moving the backend does not require editing React components.
 
 A limitation: readings are a static simulated feed; refresh rereads the file but does not collect measurements from hardware.

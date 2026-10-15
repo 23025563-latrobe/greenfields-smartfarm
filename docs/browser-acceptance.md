@@ -37,3 +37,11 @@ Open http://localhost:5185. The harness seeds a fresh test database through the 
 Automated regressions additionally cover exact case, shuffled timestamps, all numeric business-range endpoints, moisture min/max, temperature 35, rainfall 5, sensor priority, JSON error propagation, invalid feed responses, unchanged sensor bytes and SQLite persistence across real Express process restart. See the requirements checklist for remaining gaps.
 
 No product behaviour bug was demonstrated in these browser scenarios. The earlier Vite process-import lint correction is the recorded code correction; no additional correction is fabricated.
+
+## UI refinement verification
+
+The subsequent `feat/dashboard-polish` pass adds a farm header, separated overview metrics, explanatory status text, condition accents, prominent water recommendations, field guidance, a keyboard skip link, 44px minimum button height and a farm favicon. It does not change API or analysis behaviour.
+
+Exact narrow-width testing is now reproducible at `/tests/fixtures/responsive.html` on the frontend. The page embeds the real app in 320, 375 and 768px frames; it is a test fixture, not a product page. Chrome's visible scrollbars reduced the content areas to 298, 352 and 745px. Initial testing found the existing `body { min-width: 320px }` caused 320px-frame overflow (scroll width 320 versus client width 298). Removing that constraint fixed it; scroll/client widths then matched at all three sizes.
+
+Verified after refinement: 320px-frame edit/save changed Tomato 55 → 40 and immediately showed Healthy/0 L; notes remained visible; min=max form submission showed a validation error and could then be corrected and saved. The 375px history table scrolled inside its own region (888px content in 294px region) while the document stayed at 352px. Skip-link Enter focused Crop Cards with a visible outline. Main dashboard still displayed the seeded results. Failed later refresh preserved exact overview/card text; initial feed failure showed Never/N/A/Create disabled and explanatory unavailable text; crop failure still showed only Retry and no editable controls. All 16 automated tests, lint and build passed after the functional UI edits.

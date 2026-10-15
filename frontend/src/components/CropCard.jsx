@@ -15,11 +15,14 @@ function CropCard({ result, disabled, onEdit, onDelete, onHistory }) {
   } = result;
 
   return (
-    <article className="crop-card" aria-labelledby={`crop-${crop.id}`}>
+    <article className={`crop-card ${condition ? statusClass(condition) : 'unavailable'}`} aria-labelledby={`crop-${crop.id}`}>
       <header className="card-header">
-        <div>
-          <h3 id={`crop-${crop.id}`}>{crop.crop_name}</h3>
-          <p className="location">{crop.location}</p>
+        <div className="crop-identity">
+          <span className="crop-initial" aria-hidden="true">{crop.crop_name[0]}</span>
+          <div>
+            <h3 id={`crop-${crop.id}`}>{crop.crop_name}</h3>
+            <p className="location">{crop.location}</p>
+          </div>
         </div>
 
         <span className={`badge ${condition ? statusClass(condition) : 'unavailable'}`}>
@@ -47,7 +50,7 @@ function CropCard({ result, disabled, onEdit, onDelete, onHistory }) {
       </dl>
 
       <div className="recommendation">
-        <div>
+        <div className="water-recommendation">
           <span className="detail-label">Recommended water</span>
           <strong>{formatMeasurement(recommendedWater, 'L')}</strong>
         </div>
