@@ -3,7 +3,11 @@ import { openDatabase } from './db.js';
 
 const database = openDatabase();
 const app = createApp(database);
-const port = 3001;
+const port = Number(process.env.PORT ?? 3101);
+
+if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  throw new Error('PORT must be an integer between 1 and 65535');
+}
 
 const server = app.listen(port, () => {
   console.log(`GreenFields SmartFarm API: http://localhost:${port}`);
