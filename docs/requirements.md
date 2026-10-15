@@ -7,7 +7,7 @@ Statuses: missing; partial; implemented (code exists, required runtime evidence 
 | Requirement / rubric item | Location | Verification and current status |
 | --- | --- | --- |
 | A1 React → Express (4) | frontend/vite.config.js, services/api.js | Verified: HTTP proxy returns SQLite rows; Chrome loads three cards at 5184 → 3101 |
-| A2 Express JSON (4) | backend/app.js | Verified for CRUD and sensor failure contracts by backend tests; unexpected DB-failure test outstanding |
+| A2 Express JSON (4) | backend/app.js | Verified: CRUD/sensor contracts plus deliberate in-memory DB failure returns 500 Internal server error |
 | A3 Exact schema, seeds, persistence (4), §6/17 | backend/db.js | Verified: CRUD tests and temporary-file close/reopen test; no duplicate seeds, nonempty table preserved, empty table seeded without Maize |
 | A4 Read/validate raw feed (4), §7/8/13 | backend/sensor-data.js, app.js | Verified: tests exercise replacement, malformed JSON, missing file/field, wrong count, duplicate timestamp, recovery and POST failure with invalid feed |
 | A5 Loading / initial failure / later failure / empty (4), §11 | frontend/src/App.jsx | Verified: isolated Chrome initial/later sensor failure, crop failure/Retry and empty state; see browser-acceptance.md |
@@ -16,7 +16,7 @@ Statuses: missing; partial; implemented (code exists, required runtime evidence 
 | B3 Edit/recalculate (5) | CropForm.jsx, App.jsx, analysis.js | Verified: API, analysis tests and Chrome immediate Tomato recalculation plus reload persistence |
 | B4 Delete without sensor writes (4) | app.js, App.jsx | Verified: API sensor-byte comparison and isolated Chrome delete/recreate |
 | B5 Unique/immutable names (4) | db.js, app.js, CropForm.jsx | Verified: 409/400 API tests, Chrome readonly attribute and stale-form duplicate feedback |
-| B6 Types, limits, notes, errors (3) | app.js | Verified for existing API test cases; exhaustive per-field/type matrix outstanding |
+| B6 Types, limits, notes, errors (3) | app.js | Verified: POST/PUT wrong-type and range matrix, accepted exact limits, notes omission, malformed JSON, invalid IDs and error responses |
 | C1 20 objects / five each / seven fields / valid distinct timestamps (4) | sensor-readings.json, sensor-data.js | Verified: dataset and structural validator tests; mixed order and exactly one older invalid reading |
 | C2 AI prompt and correction record (3), §16/20 | README.md | Partial: provenance unknown, exact original prompt and genuine sensor correction unavailable; do not fabricate |
 | C3 Exact case-sensitive key (4) | analysis.js, app.js | Verified by analysis/API tests |
@@ -37,11 +37,11 @@ Statuses: missing; partial; implemented (code exists, required runtime evidence 
 
 ## Evidence and next checks
 
-2026-10-15: Node 25.6.1; backend 6/6 tests and frontend 10/10 tests pass. Final frontend lint and production build pass. Port-edit lint initially failed due to missing Node process import; fixed and both checks rerun successfully. Tests bind ephemeral HTTP ports with sandbox permission. Temporary fixtures are removed in teardown; working sensor JSON remains unchanged.
+2026-10-15: Node 25.6.1; backend 8/8 tests and frontend 10/10 tests pass. Final frontend lint and production build pass. Port-edit lint initially failed due to missing Node process import; fixed and both checks rerun successfully. Tests bind ephemeral HTTP ports with sandbox permission. Temporary fixtures are removed in teardown; working sensor JSON remains unchanged.
 
 Live frontend http://localhost:5184; backend http://localhost:3101. Chrome shows Tomato Dry/high temperature/500 L, Lettuce Healthy/0 L, Wheat Too Wet/rain/0 L, Watch status. Refresh changed 06:38:53 to 06:39:04. Wheat history contains five descending timestamps and 120% historical Invalid Data/N/A/Check reading. Browser captured no warnings/errors during these scenarios. Other projects' processes were left untouched.
 
-Browser CRUD, duplicate feedback, pending save, edit/reload persistence, delete/recreate, first/later sensor failures, crop failure/Retry and empty state are now verified against isolated resources; see [browser evidence](browser-acceptance.md). Real Express process restart persistence is verified by an automated temporary-database test. Exact 320/375/768px app-frame checks found and fixed narrow-screen overflow. Remaining checks: comprehensive network trace and exhaustive API validation/error matrix. Original sensor-generation provenance remains unresolved. Working database and sensor file were preserved.
+Browser CRUD, duplicate feedback, pending save, edit/reload persistence, delete/recreate, first/later sensor failures, crop failure/Retry and empty state are now verified against isolated resources; see [browser evidence](browser-acceptance.md). Real Express process restart persistence is verified by an automated temporary-database test. Exact 320/375/768px app-frame checks found and fixed narrow-screen overflow. API type/limit/error matrix is verified; the intentional test DB failure logs its expected error without exposing it in the JSON response. A full browser network trace was not available through the connected tooling; proxy HTTP responses, rendered states and captured console entries were checked. Original sensor-generation provenance remains unresolved. Working database and sensor file were preserved.
 
 Ordered work: (1) port configuration and API/persistence regression evidence; (2) isolated browser CRUD and failure-state tests, fixing demonstrated issues; (3) complete AI provenance record honestly, final rubric audit, source ZIP and demo checklist.
 
@@ -53,3 +53,5 @@ Acceptance work branch: `test/dashboard-acceptance`, based on `fix/development-p
 Submission preparation branch: `docs/submission-readiness`, based on acceptance commit `0f1bfcf`. Clean ZIP extraction installed 65 backend and 144 frontend packages using the lockfiles; all 16 tests, lint and build passed. The extracted app ran with a fresh database on 5186/3103 and Chrome showed three cards/Watch. The source archive excludes local databases and dependencies. Timed video checklist is ready; recording and LMS upload are not performed by this agent. This is a candidate submission with the remaining gaps above, not a claim of full assessment completion.
 
 UI branch: `feat/dashboard-polish` is based on submission commit `1c8dfd8`. New visual hierarchy and form guidance retain the shared analysis and data ownership. The user will prepare the MP4 later. Refresh the source ZIP after this branch's changes.
+
+Final API audit branch: `test/api-contract-audit`, based on UI commit `67547fd`. The functional rubric items have runtime evidence in tests and browser notes. Original sensor-generation provenance and user-recorded video remain partial; no numeric mark or grade is asserted. The 40-file source ZIP was regenerated with the latest audit tests and UI. A second fresh extraction installed dependencies from the npm cache and passed all 18 tests, lint and build. No dependency versions were changed.
