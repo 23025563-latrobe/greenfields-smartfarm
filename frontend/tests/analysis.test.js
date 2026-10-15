@@ -144,3 +144,18 @@ test('farm status respects priority and rain alone remains Normal', () => {
   assert.equal(calculateFarmStatus([dry, faulty]), 'Critical');
   assert.equal(calculateFarmStatus([invalid]), 'Critical');
 });
+
+test('all Online numeric bounds are inclusive and each out-of-range field stops alerts', () => {
+  for (const [field, maximum] of [['soil_moisture', 100], ['temperature', 50], ['rainfall', 50]]) {
+    for (const value of [0, maximum]) {
+      assert.notEqual(analyseCrop(crop, reading({ [field]: value })).condition, 'Invalid Data');
+    }
+    for (const value of [-0.01, maximum + 0.01]) {
+      const result = analyseCrop(crop, reading({ temperature: 38, rainfall: 5, [field]: value }));
+      assert.equal(result.condition, 'Invalid Data');
+      assert.deepEqual(result.alerts, [`Invalid ${field}`]);
+      assert.equal(result.recommendedWater, null);
+      assert.equal(result.action, 'Check reading');
+    }
+  }
+});
