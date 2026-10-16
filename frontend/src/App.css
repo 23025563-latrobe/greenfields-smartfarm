@@ -326,6 +326,49 @@
   gap: 24px;
 }
 
+.condition-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  border: 1px solid #dbe3d9;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.condition-filter-field {
+  display: grid;
+  gap: 7px;
+  flex: 0 1 260px;
+  min-width: 0;
+}
+
+.crop-search-field {
+  display: grid;
+  gap: 7px;
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.condition-filter label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.condition-filter select,
+.condition-filter input {
+  min-height: 44px;
+}
+
+.filter-count {
+  margin: 0;
+  color: #5b6b60;
+  font-size: 0.85rem;
+}
+
 .crop-card {
   display: flex;
   flex-direction: column;
@@ -596,6 +639,10 @@ tbody tr:nth-child(even) {
 }
 
 @media (max-width: 680px) {
+  .condition-filter-field,
+  .crop-search-field {
+    flex-basis: 100%;
+  }
   .app {
     padding: 16px 16px 20px;
   }

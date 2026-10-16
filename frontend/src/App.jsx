@@ -26,6 +26,8 @@ const farmStatusDescriptions = {
   'Sensor Feed Unavailable': 'Load the sensor feed to calculate crop conditions.'
 };
 
+const cropConditions = ['Healthy', 'Dry', 'Too Wet', 'Sensor Problem', 'Invalid Data'];
+
 function App() {
   const [crops, setCrops] = useState(null);
   const [readings, setReadings] = useState(null);
@@ -41,9 +43,13 @@ function App() {
   const [pendingDelete, setPendingDelete] = useState(null);
   const [historyId, setHistoryId] = useState(null);
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const [conditionFilter, setConditionFilter] = useState('all');
+  const [cropSearch, setCropSearch] = useState('');
   const addButtonRef = useRef(null);
   const dashboardRef = useRef(null);
   const deleteButtonRef = useRef(null);
+  const conditionFilterRef = useRef(null);
+  const cropSearchRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -94,6 +100,13 @@ function App() {
     analyseCrop(crop, getLatestReading(crop.crop_name, currentReadings))
   );
   const farmStatus = calculateFarmStatus(results, hasSensorData);
+  const searchTerm = cropSearch.trim().toLowerCase();
+  const visibleResults = results.filter(result => {
+    const matchesCondition = conditionFilter === 'all' || result.condition === conditionFilter;
+    const matchesSearch = result.crop.crop_name.toLowerCase().includes(searchTerm) ||
+      result.crop.location.toLowerCase().includes(searchTerm);
+    return matchesCondition && matchesSearch;
+  });
   const availableNames = getAvailableCropNames(currentReadings, currentCrops);
   const historyCrop = currentCrops.find(crop => crop.id === historyId);
   const isBusy = isSaving || isRefreshing;
@@ -388,14 +401,65 @@ function App() {
               <p className="muted">Latest readings matched by crop name</p>
             </div>
 
+            {currentCrops.length > 0 && (
+              <div className="condition-filter">
+                <div className="crop-search-field">
+                  <label htmlFor="crop-search">Search crops</label>
+                  <input
+                    id="crop-search"
+                    ref={cropSearchRef}
+                    type="search"
+                    placeholder="Crop name or location"
+                    value={cropSearch}
+                    onChange={event => setCropSearch(event.target.value)}
+                    aria-describedby="filter-count"
+                  />
+                </div>
+                <div className="condition-filter-field">
+                  <label htmlFor="condition-filter">Filter by condition</label>
+                  <select
+                    id="condition-filter"
+                    ref={conditionFilterRef}
+                    value={conditionFilter}
+                    onChange={event => setConditionFilter(event.target.value)}
+                    aria-describedby="filter-count"
+                  >
+                    <option value="all">All conditions</option>
+                    {cropConditions.map(condition => (
+                      <option key={condition} value={condition}>{condition}</option>
+                    ))}
+                  </select>
+                </div>
+                <p id="filter-count" className="filter-count" role="status" aria-atomic="true">
+                  Showing {visibleResults.length} of {currentCrops.length} {currentCrops.length === 1 ? 'crop' : 'crops'}
+                </p>
+              </div>
+            )}
+
             {currentCrops.length === 0 ? (
               <div className="empty-state">
                 <h3>No crop cards yet</h3>
                 <p>Add a crop card to configure its moisture range and watering amount.</p>
               </div>
+            ) : visibleResults.length === 0 ? (
+              <div className="empty-state">
+                <h3>{searchTerm ? 'No crops match your search' : 'No crops match this condition'}</h3>
+                <p>Try another search or condition to view your crop cards.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConditionFilter('all');
+                    setCropSearch('');
+                    if (searchTerm) cropSearchRef.current?.focus();
+                    else conditionFilterRef.current?.focus();
+                  }}
+                >
+                  {searchTerm ? 'Reset search and filter' : 'Reset filter'}
+                </button>
+              </div>
             ) : (
               <div className="crop-grid">
-                {results.map(result => (
+                {visibleResults.map(result => (
                   <CropCard
                     key={result.crop.id}
                     result={result}
