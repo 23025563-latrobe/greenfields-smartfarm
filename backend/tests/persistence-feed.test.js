@@ -96,22 +96,78 @@ test('Express process restart preserves a created card without duplicate seeds',
     import { createApp } from ${JSON.stringify(new URL('../app.js', import.meta.url).href)};
     import { openDatabase } from ${JSON.stringify(new URL('../db.js', import.meta.url).href)};
     const db = openDatabase(process.argv[1]);
-    const server = createApp(db).listen(0, '127.0.0.1', () => console.log(server.address().port));
+    const server = createApp(db).listen(0, '127.0.0.1', error => {
+      if (error) throw error;
+      const port = server.address().port;
+      console.log('Restart-test server listening on port', port);
+      process.send({ type: 'listening', port });
+    });
     process.once('SIGTERM', () => server.close(() => { db.close(); process.exit(0); }));
   `;
   async function start() {
-    child = spawn(process.execPath, ['--input-type=module', '-e', code, path], { stdio: ['ignore', 'pipe', 'inherit'] });
-    const [output] = await once(child.stdout, 'data');
-    const port = Number(output.toString().trim());
-    assert.ok(Number.isInteger(port) && port > 0);
-    return `http://127.0.0.1:${port}`;
+    child = spawn(process.execPath, ['--input-type=module', '-e', code, path], {
+      // Exercise the coloured-console environment that broke stdout parsing.
+      env: { ...process.env, FORCE_COLOR: '1' },
+      stdio: ['ignore', 'inherit', 'inherit', 'ipc']
+    });
+    const serverProcess = child;
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => finish(new Error('Restart-test server did not report readiness within 10 seconds')), 10000);
+
+      function finish(error, url) {
+        clearTimeout(timeout);
+        serverProcess.off('message', onMessage);
+        serverProcess.off('error', onError);
+        serverProcess.off('exit', onExit);
+        if (error) reject(error);
+        else resolve(url);
+      }
+
+      function onMessage(message) {
+        if (message?.type !== 'listening') return;
+        const { port } = message;
+        try {
+          assert.ok(Number.isInteger(port) && port > 0 && port <= 65535,
+            `Invalid bound port in readiness message: ${JSON.stringify(message)}`);
+          finish(null, `http://127.0.0.1:${port}`);
+        } catch (error) {
+          finish(error);
+        }
+      }
+
+      function onError(error) {
+        finish(error);
+      }
+
+      function onExit(code, signal) {
+        finish(new Error(`Restart-test server exited before readiness (code ${code}, signal ${signal})`));
+      }
+
+      serverProcess.on('message', onMessage);
+      serverProcess.once('error', onError);
+      serverProcess.once('exit', onExit);
+    });
   }
+
   async function stop() {
-    const exited = once(child, 'exit');
-    child.kill('SIGTERM');
-    const [code] = await exited;
-    assert.equal(code, 0);
+    const serverProcess = child;
     child = null;
+    if (!serverProcess?.pid) return;
+    if (serverProcess.exitCode !== null || serverProcess.signalCode !== null) {
+      assert.equal(serverProcess.exitCode, 0, 'Restart-test server exited unexpectedly');
+      return;
+    }
+    const exited = once(serverProcess, 'exit');
+    serverProcess.kill('SIGTERM');
+    // Bound teardown too: a broken shutdown must fail without leaving a child alive.
+    const timeout = setTimeout(() => serverProcess.kill('SIGKILL'), 5000);
+    try {
+      const [code, signal] = await exited;
+      assert.equal(code, 0, `Restart-test server failed to shut down cleanly (signal ${signal})`);
+    } finally {
+      clearTimeout(timeout);
+    }
   }
   try {
     let base = await start();
@@ -129,7 +185,11 @@ test('Express process restart preserves a created card without duplicate seeds',
     assert.equal(new Set(crops.map(crop => crop.crop_name)).size, 4);
     await stop();
   } finally {
-    if (child) await stop();
-    await rm(directory, { recursive: true, force: true });
+    try {
+      // An exited child needs no termination; keep the original startup/test error.
+      if (child?.exitCode === null && child.signalCode === null) await stop();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   }
 });
