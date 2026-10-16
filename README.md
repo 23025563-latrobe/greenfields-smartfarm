@@ -8,7 +8,13 @@ GreenFields SmartFarm is a full-stack application for creating, viewing, editing
 
 ## Video demonstration
 
-Upload a 3–5 minute MP4 with working audio and the source ZIP directly to the LMS. Demonstrate the three seeded cards, create Maize and show its Faulty sensor result, edit and delete a card, refresh readings, and open Sensor History. Explain how crop settings, sensor readings and calculated results are handled. A shared video link or GitHub repository does not replace these deliverables.
+A recorded demonstration of GreenFields SmartFarm is available through Google Drive:
+
+[**Watch the GreenFields SmartFarm Video Demonstration**](https://drive.google.com/file/d/1c23kKyziS9GvXubNOEl53H2TONmH5nFq/view?usp=sharing)
+
+The video shows the initial dashboard, creating Maize and matching its latest sensor reading, editing a crop, deleting and recreating Maize, refreshing the sensor feed, and viewing Wheat’s sensor history. It also explains the exact crop-name match and how the latest reading is selected by timestamp.
+
+Upload the MP4 and source ZIP directly to the LMS. The Google Drive link is supplementary and does not replace the required MP4 upload.
 
 ## Application screenshots
 
@@ -77,6 +83,8 @@ The following figures were captured from the running application using the isola
 | Browser checks | Chrome |
 
 ## Install and run locally
+
+The project source code is available on GitHub: [**GreenFields SmartFarm repository**](https://github.com/23025563-latrobe/greenfields-smartfarm)
 
 **Prerequisites:** Node.js and npm. The application was tested with Node.js 25.6.1; other Node.js versions have not been verified. Use two terminals, one for Express and one for React.
 
@@ -273,18 +281,6 @@ Exact name matching and uniqueness were checked through helper tests, direct API
 ### Implementation decision
 
 The browser sends relative `/api` requests through Vite's development proxy. The backend port and proxy target can change together without editing React components. Separately, React stores raw source state and derives results through shared helpers, keeping cards, history and farm status consistent.
-
-## Source ZIP and submission preparation
-
-From the extracted source directory or a Git checkout, run:
-
-```bash
-python3 scripts/package-source.py
-```
-
-This creates `output/greenfields-smartfarm-source.zip` from tracked source files. Add any new submission files to Git before packaging. Dependencies, secrets, local databases and generated builds are excluded. Both lockfiles, database initialisation and the sensor JSON are included.
-
-The previously checked archive installed successfully in a clean extraction; its 18 automated tests passed, and frontend lint and build completed successfully. Both applications also ran from a clean extraction and displayed the three seeded cards. Rebuild and verify the source ZIP after final changes so it includes the submitted README and figures.
 
 ## Limitation
 
