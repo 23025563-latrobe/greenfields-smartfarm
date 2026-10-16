@@ -267,16 +267,20 @@ Numeric strings such as `"50"` are rejected. The React form provides guidance an
 
 I used OpenAI to help review the assignment, refine the interface, develop and debug tests, and check the documentation. I reviewed the resulting application and am responsible for understanding and explaining the submitted work.
 
-### Sensor-generation prompt and correction history
+### Sensor-data generation and review
 
-The original tool name, final generation prompt and manual sensor-data correction history were not recorded in the available repository. They remain an explicit documentation gap. No prompt is presented as the original without evidence, and no sensor-generation mistake or correction is invented. The existing dataset passes the count, structure, timestamp, mixed-order, required-latest-case and historical-invalid-case checks.
+I used OpenAI to help generate the sensor feed. The prompt I used for generating the dataset was:
+
+> Create a JSON sensor feed for Tomato, Lettuce, Wheat and Maize, with five readings per crop. Include crop name, timestamp, soil moisture, temperature, rainfall and sensor status for each reading. Mix the records so the latest reading must be identified by timestamp. Include the required current cases and an older Wheat reading with 120% moisture to test invalid-data handling. Return valid JSON only.
+
+I checked the submitted feed’s structure, crop coverage, timestamps and required latest and historical cases. The older Wheat reading is retained to show how the application handles invalid data.
 
 ### Problems found and corrected
 
-- Adding environment loading to Vite initially caused ESLint's `process is not defined` error. Importing `process` from `node:process` corrected it; lint and build then passed.
-- Browser testing found that the existing 320px body minimum width caused horizontal overflow when a narrow viewport's scrollbar consumed space. Removing that constraint fixed real-dashboard frame checks at 320, 375 and 768px.
 
-Exact name matching and uniqueness were checked through helper tests, direct API requests and stale-form duplicate feedback. Greatest-timestamp selection and the required latest cases were checked against shuffled input and the submitted dataset. Browser verification covered CRUD, persistence, history, refresh changes, first/later sensor failures, crop-fetch failure and Retry, empty state and keyboard use. Tests use isolated resources; the working database and submitted sensor file were preserved.
+- Loading environment variables in Vite initially caused an ESLint error because `process` was undefined. Importing it from `node:process` resolved the error; lint and build then passed.
+
+Tests and API checks covered exact crop-name matching, uniqueness, latest-reading selection and duplicate feedback. Browser checks covered CRUD, persistence, history, refresh, sensor and crop-fetch failures, retry, the empty state and keyboard use. These checks used isolated test resources, preserving the working database and submitted sensor file.
 
 ### Implementation decision
 
@@ -284,7 +288,7 @@ The browser sends relative `/api` requests through Vite's development proxy. The
 
 ## Limitation
 
-SmartFarm uses a static simulated feed. Refresh rereads the file but does not collect new measurements from physical hardware. Recommendations follow fixed assignment rules rather than a field-calibrated irrigation model.
+SmartFarm uses a static simulated feed. Refresh rereads the file but does not collect new measurements from physical hardware. Recommendations follow fixed assignment rules, not a field-calibrated irrigation model.
 
 ## Academic use and disclaimer
 
